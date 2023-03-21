@@ -1,22 +1,20 @@
 ﻿using AutoMapper;
+using Business.RabbitMQ.Interfaces;
 using Data.Dtos.MapperDto;
 using Data.EntityClasses;
 using Data.Results;
 using DataAccess.Repositories.UnitOfWorks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business
 {
     public class UserBusiness
     {
         private readonly IMapper mapper;
+        private readonly IUserProducer userProducer;
 
-        public UserBusiness(IMapper mapper)
+        public UserBusiness(IMapper mapper,IUserProducer userProducer)
         {
+            this.userProducer = userProducer;
             this.mapper = mapper;
         }
 
@@ -25,10 +23,12 @@ namespace Business
 
             var mappedUser = mapper.Map<User>(userDto);
 
+
             using (UnitOfWork uow = new UnitOfWork(new Data.ContextClasses.MasterContext()))
             {
                 uow.UserRepository.Add(mappedUser);
                 uow.SaveChanges();
+                userProducer.PublishUser(mappedUser);
             }
             return new SuccessDataResult<User>(mappedUser);
         }
@@ -58,7 +58,6 @@ namespace Business
                 {
                     return new ErrorDataResult<User>("User not found!");
                 }
-                user.DeletedTime = DateTime.UtcNow;
                 uow.SaveChanges();
                 return new SuccessDataResult<User>(user);
             }

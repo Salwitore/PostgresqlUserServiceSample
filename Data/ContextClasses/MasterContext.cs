@@ -10,14 +10,6 @@ namespace Data.ContextClasses
 {
     public class MasterContext : DbContext
     {
-
-        public MasterContext(DbContextOptions<MasterContext> options) : base(options) { }
-
-        static MasterContext()
-        {
-            //AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-        }
-
         public MasterContext()
         {
             
@@ -28,13 +20,15 @@ namespace Data.ContextClasses
         protected override void OnConfiguring (DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseNpgsql("Server=127.0.0.1;Port=5432;Database=postgres;User Id=postgres;Password=postgres;");
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.UseSerialColumns();
+            modelBuilder.Entity<User>().Property(u => u.Id).ValueGeneratedOnAdd();
 
             modelBuilder.Entity<User>().Property<DateTime>("CreatedDate");
+            modelBuilder.Entity<User>().Property<DateTime>("UpdateDate");
         }
 
 
@@ -50,7 +44,7 @@ namespace Data.ContextClasses
                 if (entityEntry.State == EntityState.Added)
                 {
                     entityEntry.Property("CreatedDate").CurrentValue = DateTime.UtcNow;
-                    entityEntry.Property("DeletedTime").CurrentValue = DateTime.MinValue;
+                    entityEntry.Property("UpdateDate").CurrentValue = DateTime.MinValue;
                 }
 
             }

@@ -1,5 +1,10 @@
 using Business;
+using Business.MapperProfiles;
+using Business.RabbitMQ.Interfaces;
+using Business.RabbitMQ.Producers;
 using Data.ContextClasses;
+using Data.Dtos.MapperDto;
+using Data.EntityClasses;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,9 +18,15 @@ builder.Services.AddSwaggerGen();
 
 
 
-builder.Services.AddScoped<UserBusiness>();
 
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddScoped<UserBusiness>();
+builder.Services.AddSingleton<IUserProducer, UserProducer>();
+//AppDomain.CurrentDomain.GetAssemblies()
+builder.Services.AddAutoMapper(c =>
+    {
+        c.AddProfile<AutoProfile<UserDto, User>>();
+        c.AddProfile<AutoProfile<UserDto, User>>();
+    });
 
 var app = builder.Build();
 

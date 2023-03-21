@@ -12,5 +12,7 @@ namespace DataAccess.Repositories.UnitOfWorks
         IUserRepository UserRepository { get; }
 
         int SaveChanges();
+
+        IUserRepository GetRepository();
     }
 }

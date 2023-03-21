@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.EntityClasses
 {
-    [Table("DenemeUser")]
-    public class User
+    [Table("ConsumeUser")]
+    internal class ConsumeUser
     {
-        [Key,Required]
-        public int Id { get; set; }
+        [Key]
+        public string Id { get; set; }
 
         public string Email { get; set; }
 
@@ -16,6 +16,5 @@ namespace Data.EntityClasses
         public string Name { get; set; }
 
         public string Surname { get; set; }
-
     }
 }
